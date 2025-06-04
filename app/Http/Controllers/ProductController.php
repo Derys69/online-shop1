@@ -2,61 +2,95 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = collect(range(1, 20))->map(function ($i) {
-            return [
-                'id' => $i,
-                'name' => "Product $i",
-                'description' => "Deskripsi untuk produk $i",
-                'price' => rand(10000, 100000),
-            ];
-        });
+        $query = Product::with('category');
+        // Search
+        if ($request->filled('q')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->q . '%')
+                  ->orWhere('description', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Filter
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Sort
+        if ($request->filled('sort_by')) {
+            $sortOrder = $request->get('sort_order', 'asc');
+            $query->orderBy($request->sort_by, $sortOrder);
+        }
+
+        $products = $query->get();
 
         return view('products.list', compact('products'));
     }
 
     public function create()
     {
-        return view('products.form');
-        
+        $categories = Category::all();
+        return view('products.form', compact('categories'));
     }
 
-public function store(Request $request)
+    public function store(Request $request)
     {
-        return redirect()->route('products');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        Product::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'stock' => 0,
+            'category_id' => $validated['category_id'],
+        ]);
+
+        return redirect()->route('products')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
-        $product = (object)[
-            'id' => $id,
-            'name' => "Product $id",
-            'description' => "Edit description for product $id",
-            'price' => rand(1000, 10000),
-        ];
-
-        return view('products.form', compact('product'));
+        $product = Product::findOrFail($id);
+        $categories = Category::all();
+        return view('products.form', compact('product', 'categories'));
     }
 
     public function update(Request $request, $id)
     {
-        return redirect()->route('products')->with('success', 'Product updated!');
+        $product = Product::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $product->update($validated);
+
+        return redirect()->route('products')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function show($id)
-    {   
-        return (object) [
-            'id' => $id,
-            'name' => "Product $id",
-            'description' => "Detail of product $id",
-            'price' => rand(1000, 10000),
-     ];
+    {
+        $product = Product::with('category')->findOrFail($id);
+        return response()->json($product);
     }
 }
-

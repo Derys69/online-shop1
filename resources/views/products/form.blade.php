@@ -22,7 +22,15 @@
             <label for="price" class="form-label">Price</label>
             <input type="number" name="price" id="price" class="form-control" required>
         </div>
-
+        <div class="mb-3">
+            <label for="category_id" class="form-label">Kategori</label>
+            <select name="category_id" id="category_id" class="form-select" required>
+                <option value="">Pilih Kategori</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>

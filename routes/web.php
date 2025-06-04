@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProductController;
-
+Route::get('/', function () {
+    return view('home');
+})->name('home');
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
 Route::prefix('products')->controller(ProductController::class)->group(function () {
     Route::get('/', 'index')->name('products');
     Route::get('/create', 'create')->name('products.create');

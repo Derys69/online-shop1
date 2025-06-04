@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
+        <img src="{{ asset('images/toko_.png') }}" alt="Home" height="100" class="me-2">
+    </a>
     <meta charset="UTF-8">
     <title>Produk</title>
     <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -9,7 +12,7 @@
   color-scheme: dark;
   --bs-body-color: #dee2e6;
   --bs-body-color-rgb: 222, 226, 230;
-  --bs-body-bg: #212529;
+  --bs-body-bg: #161D26;
   --bs-body-bg-rgb: 33, 37, 41;
   --bs-emphasis-color: #fff;
   --bs-emphasis-color-rgb: 255, 255, 255;
