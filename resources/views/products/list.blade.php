@@ -45,7 +45,7 @@
 </div>
 </form>
     <!--ProdukWidget -->            
-<div class="container-fluid mt-4">
+<div class="container">
     <div class="row row-cols-1 row-cols-md-4 g-4">
         @forelse ($products as $product)
             <div class="col">

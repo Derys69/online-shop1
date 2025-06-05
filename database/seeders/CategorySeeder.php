@@ -9,10 +9,6 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        Category::insert([
-            ['name' => 'Houseware'],
-            ['name' => 'Paint'],
-            ['name' => 'Tools'],
-        ]);
+        Category::factory()->count(3)->create();
     }
 }
