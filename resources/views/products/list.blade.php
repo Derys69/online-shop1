@@ -8,10 +8,11 @@
         <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#filterForm">
     🔍 Filter / Cari Produk
         </button>
+        @if (auth()->check() && auth()->user()->role == \App\Enums\UserRoleEnum::Administrator)
         <a class="btn btn-primary" href="{{ route('products.create') }}" role="button">Add new product</a>
+        @endif
     </div>
 
-<!-- tombol search nanti di pindah ke widget -->
 <div class="collapse mb-4" id="filterForm">
     <form method="GET" action="{{ route('products') }}">
         <div class="row g-2">
@@ -43,8 +44,7 @@
         </div>
     </form>
 </div>
-</form>
-    <!--ProdukWidget -->            
+ <!--ProdukWidget -->            
 <div class="container">
     <div class="row row-cols-1 row-cols-md-4 g-4">
         @forelse ($products as $product)
@@ -55,20 +55,28 @@
                         <p><strong>Product:</strong> {{ $product->name }}</p>
                         <p><strong>Description:</strong> {{ $product->description }}</p>
                     </div>
-                    <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                    <div class="card-footer text-muted d-flex flex-column">
                         <small>Kategori: {{ $product->category->name ?? '-' }}</small>
                         <strong>Rp {{ number_format($product->price, 0, ',', '.') }}</strong>
+
+                        {{-- Tombol keranjang --}}
+                        <form method="POST" action="{{ route('cart.add', $product) }}">
+                            @csrf
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-sm btn-success mt-2">
+                                🛒 Masukkan ke Keranjang
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         @empty
             <div class="col">
-                <div class="alert alert-warning">Tidak ada produk ditemukan.</div>
+                <div class="alert alert-warning">
+                    Tidak ada produk ditemukan.
+                </div>
             </div>
         @endforelse
     </div>
-</div>
-        </tbody>
-    </table>
 </div>
 @endsection

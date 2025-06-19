@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
-        <img src="{{ asset('images/toko_.png') }}" alt="Home" height="100" class="me-2">
-    </a>
     <meta charset="UTF-8">
     <title>Produk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
+   
 [data-bs-theme=dark] {
   color-scheme: dark;
   --bs-body-color: #dee2e6;
@@ -62,14 +61,76 @@
   --bs-form-valid-border-color: #75b798;
   --bs-form-invalid-color: #ea868f;
   --bs-form-invalid-border-color: #ea868f;
-}
+} 
     </style>
 </head>
 <body data-bs-theme="dark">
+
+   {{-- Navbar Atas: Logo + Cart + Auth --}}
+<nav class="bg-dark py-2 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        {{-- Logo --}}
+        <a class="navbar-brand d-flex align-items-center text-light" href="{{ route('home') }}">
+            <img src="{{ asset('images/toko_.png') }}" alt="Logo" height="50" class="me-2">
+        </a>
+
+        {{-- Bagian Kanan: Cart dan User --}}
+        <div class="d-flex align-items-center">
+            @auth
+                @php
+                    $cartCount = \App\Models\Cart::where('user_id', auth()->id())->count();
+                @endphp
+                <a href="{{ route('cart') }}" class="btn btn-outline-light position-relative me-3">
+                    🛒
+                    @if ($cartCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
+            @endauth
+
+            @auth
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                        {{ auth()->user()->username }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Keluar</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Masuk</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>
+            @endauth
+        </div>
+    </div>
+</nav>
+
+{{-- Navbar Bawah: Navigasi --}}
+<nav class="bg-secondary py-2">
+    <div class="container">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ route('products') }}">Produk</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ route('contact') }}">Tentang Kami</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    {{-- Konten --}}
     <div class="container mt-4">
         @yield('content')
     </div>
 
-    <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>
