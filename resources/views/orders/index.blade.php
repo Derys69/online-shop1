@@ -30,7 +30,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <input type="number" name="quantity" value="{{ $item->quantity }}" class="form-control form-control-sm w-50" min="1">
-                                        <button type="submit" class="btn btn-sm btn-outline-light ms-2">Ubah</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-light ms-2">Tambahkan</button>
                                     </form>
                                 </td>
                                 <td class="text-end">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</td>

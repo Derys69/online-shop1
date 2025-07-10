@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
-   
+
 [data-bs-theme=dark] {
   color-scheme: dark;
   --bs-body-color: #dee2e6;
@@ -91,19 +91,45 @@
             @endauth
 
             @auth
-                <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
-                        {{ auth()->user()->username }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Keluar</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+<div class="dropdown">
+    <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ auth()->user()->username ?? auth()->user()->name }}
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end">
+        @auth
+            @if (in_array(auth()->user()->role, [
+                \App\Enums\UserRoleEnum::Administrator,
+                \App\Enums\UserRoleEnum::Author
+            ]))
+                <li>
+                    <a class="dropdown-item" href="{{ route('stock.index') }}">
+                        Pengaturan Stok
+                    </a>
+                </li>
+            @endif
+
+            @if(auth()->user()->role === \App\Enums\UserRoleEnum::Administrator)
+                <li>
+                    <a class="dropdown-item" href="{{ route('user.list') }}">
+                        Manajemen Pengguna
+                    </a>
+                </li>
+            @endif
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">Keluar</button>
+                </form>
+            </li>
+        @endauth
+    </ul>
+</div>
+
+
             @else
                 <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Masuk</a>
                 <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>

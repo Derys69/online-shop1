@@ -8,6 +8,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Middleware\Admin;
+use App\Http\Middleware\AdminOrAuthor;
+use App\Http\Controllers\StockController;
 
 // Register
 Route::match(['get', 'post'], '/register', [RegisterController::class, 'form'])
@@ -22,26 +25,27 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-// Login form & proses logout
+// Login form + proses logout
 Route::match(['get', 'post'], '/login', [LoginController::class, 'form'])->name('login')->middleware('guest');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Produk - bisa diakses publik (seperti katalog), sebagian khusus admin
+// Produk create (khusus admin)
 Route::prefix('products')->controller(ProductController::class)->group(function () {
     Route::get('/', 'index')->name('products');                // katalog
     Route::get('/show/{id}', 'show')->name('products.show');   // detail produk
 
-    // Buat, edit hanya jika login (admin)
-    Route::middleware('auth')->group(function () {
-        Route::get('/create', 'create')->name('products.create');
-        Route::get('/edit/{id}', 'edit')->name('products.edit');
-        Route::post('/store', 'store')->name('products.store');
-        Route::post('/update/{id}', 'update')->name('products.update');
-    });
+    //edit hanya jika login admin&author
+Route::middleware(['auth', AdminOrAuthor::class])->group(function () {
+    Route::get('/create', 'create')->name('products.create');
+    Route::get('/edit/{id}', 'edit')->name('products.edit');
+    Route::post('/store', 'store')->name('products.store');
+    Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
+
+});
 });
 
 // Manajemen user (admin)
-Route::controller(UserController::class)->middleware('auth')->group(function () {
+Route::controller(UserController::class)->middleware(['auth', Admin::class])->group(function () {
     Route::get('/users', 'list')->name('user.list');
     Route::match(['get', 'post'], '/users/create', 'create')->name('user.create');
     Route::match(['get', 'post'], '/users/{id}/edit', 'edit')->name('user.edit');
@@ -62,3 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/process', [CheckOutController::class, 'process'])->name('checkout.process');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 });
+
+    Route::middleware(['auth', AdminOrAuthor::class])->group(function () {
+        Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+        Route::get('/stock/edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
+        Route::post('/stock/update/{id}', [StockController::class, 'update'])->name('stock.update');
+    });

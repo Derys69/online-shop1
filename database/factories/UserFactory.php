@@ -14,6 +14,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'username' => fake()->unique()->userName(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
@@ -37,6 +38,10 @@ class UserFactory extends Factory
     public function author(): static
     {
         return $this->state(fn() => [
+            'username' => 'author',
+            'name' => 'Asep',
+            'email' => 'author@example.com',
+            'password' => 'author123',
             'role' => UserRoleEnum::Author,
         ]);
     }
@@ -44,6 +49,10 @@ class UserFactory extends Factory
     public function viewer(): static
     {
         return $this->state(fn() => [
+            'username' => 'viewer',
+            'name' => 'Asep',
+            'email' => 'viewer@example.com',
+            'password' => 'viewer123',
             'role' => UserRoleEnum::Viewer,
         ]);
     }

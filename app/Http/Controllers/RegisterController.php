@@ -13,7 +13,7 @@ class RegisterController extends Controller
         if ($request->isMethod('post')) {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:users,username', // ✅ ditambahkan
+                'username' => 'required|string|max:255|unique:users,username',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:6|confirmed',
             ]);
